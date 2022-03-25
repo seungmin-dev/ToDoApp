@@ -6,7 +6,7 @@ function ToDoList() {
         const {
             currentTarget: {value},
         } = event;
-        setToDo(toDo);
+        setToDo(value);
     };
     const onSubmit = (event:React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -21,3 +21,5 @@ function ToDoList() {
         </div>
     )
 }
+
+export default ToDoList;

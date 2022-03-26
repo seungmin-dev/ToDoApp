@@ -28,6 +28,9 @@ interface IForm {
   firstName: string;
   lastName: string;
   userName: string;
+  password1: string;
+  password2: string;
+  extraError?: string; //항목이 필수값이 아니면 '?'
 }
 
 function ToDoList() {
@@ -36,13 +39,21 @@ function ToDoList() {
     watch,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<IForm>({
     defaultValues: {
       email: "@naver.com",
     },
   });
-  const onValid = (data: any) => {
-    console.log(data);
+  const onValid = (data: IForm) => {
+    if (data.password1 !== data.password2) {
+      setError(
+        "password2",
+        { message: "Passwords are not the same" },
+        { shouldFocus: true } //error가 발생한다면 해당 항목으로 자동 focus
+      );
+    }
+    setError("extraError", { message: "Server offline." });
   };
   console.log(errors);
   return (
@@ -63,7 +74,18 @@ function ToDoList() {
         />
         <span>{errors?.email?.message}</span>
         <input
-          {...register("firstName", { required: "firstname is required" })}
+          {...register("firstName", {
+            required: "firstname is required",
+            validate: {
+              noDogs: (value) =>
+                value.includes("dog") ? "No Dogs allowed." : true,
+              noCats: (value) =>
+                value.includes("cat") ? "No Cats allowed." : true,
+            },
+            // or
+            // validate: (value) => !value.includes("dog")
+            // dog이 들어있으면 안됨
+          })}
           placeholder="First Name"
         />
         <span>{errors?.firstName?.message}</span>
@@ -83,6 +105,28 @@ function ToDoList() {
           placeholder="userName"
         />
         <span>{errors?.userName?.message}</span>
+        <input
+          {...register("password1", {
+            required: "password is required",
+            minLength: {
+              value: 8,
+              message: "Your password is too short",
+            },
+          })}
+          placeholder="password"
+        />
+        <span>{errors?.password1?.message}</span>
+        <input
+          {...register("password2", {
+            required: "Password is required",
+            minLength: {
+              value: 8,
+              message: "Your password is too short",
+            },
+          })}
+          placeholder="password"
+        />
+        <span>{errors?.password2?.message}</span>
         <button>Add</button>
       </form>
     </div>

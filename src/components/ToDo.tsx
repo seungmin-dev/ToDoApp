@@ -1,6 +1,6 @@
 import React from "react";
 import { useSetRecoilState } from "recoil";
-import { IToDo, toDoState } from "../atoms";
+import { Categories, IToDo, toDoState } from "../atoms";
 
 // function ToDo({ text, category, id }: IToDo) {
 //   const setToDos = useSetRecoilState(toDoState);
@@ -46,18 +46,18 @@ function ToDo({ text, category, id }: IToDo) {
   return (
     <li>
       {text}
-      {category !== "TODO" && ( //인자가 있는 OnClick 이벤트를 처리하는 방법 <익명함수>, 보통은 onClick={onClick} 이렇게 하지만 이렇게 하면 인자가 넘겨지지 않을 것임
-        <button name="TODO" onClick={onClick}>
+      {category !== Categories.TODO && ( //인자가 있는 OnClick 이벤트를 처리하는 방법 <익명함수>, 보통은 onClick={onClick} 이렇게 하지만 이렇게 하면 인자가 넘겨지지 않을 것임
+        <button name={Categories.TODO} onClick={onClick}>
           To Do
         </button>
       )}
-      {category !== "DOING" && (
-        <button name="DOING" onClick={onClick}>
+      {category !== Categories.DOING && (
+        <button name={Categories.DOING} onClick={onClick}>
           Doing
         </button>
       )}
-      {category !== "DONE" && (
-        <button name="DONE" onClick={onClick}>
+      {category !== Categories.DONE && (
+        <button name={Categories.DONE} onClick={onClick}>
           Done
         </button>
       )}

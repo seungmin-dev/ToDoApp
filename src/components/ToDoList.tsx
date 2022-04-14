@@ -1,41 +1,123 @@
-import { AnySrvRecord } from "dns";
-import React from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import styled from "styled-components";
 import {
-  atom,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from "recoil";
-import { NumberLiteralType } from "typescript";
-import { Categories, categoryState, toDoSelector, toDoState } from "../atoms";
+  Categories,
+  categoryState,
+  othersCategoryState,
+  toDoSelector,
+  toDoState,
+} from "../atoms";
+import CreateCategory from "./CreateCategory";
 import CreateToDo from "./CreateToDo";
 import ToDo from "./ToDo";
 
+const Container = styled.div`
+  padding: 30px 0;
+  max-width: 480px;
+  margin: 0 auto;
+`;
+
+const ToDoBoard = styled.div`
+  border-radius: 15px;
+  box-shadow: 3px 3px 5px #bbb;
+  padding: 10px;
+  background-color: ${(props) => props.theme.boardColor};
+`;
+
+const Header = styled.div`
+  margin: 20px 0;
+`;
+
+const Title = styled.h2`
+  font-size: 30px;
+  text-align: center;
+`;
+
+const BtnWrapper = styled.div`
+  margin-bottom: 10px;
+  flex-direction: column;
+`;
+
+export const Btn = styled.button`
+  border: none;
+  background-color: white;
+  border-radius: 5px;
+  padding: 5px 10px;
+`;
+
 function ToDoList() {
+  const allToDos = useRecoilValue(toDoState);
   const toDos = useRecoilValue(toDoSelector);
   const [category, setCatogory] = useRecoilState(categoryState);
-  const onInput = (event: React.FormEvent<HTMLSelectElement>) => {
-    setCatogory(event.currentTarget.value as any);
+  const othersCategories = useRecoilValue(othersCategoryState);
+  const [othersBtn, setOthersBtn] = useState(false);
+  const onChangeCategories = (event: React.FormEvent<HTMLButtonElement>) => {
+    const {
+      currentTarget: { value },
+    } = event;
+    setCatogory(value as any);
   };
+  const onClickOthers = () => {
+    setOthersBtn((prev) => !prev);
+  };
+  useEffect(() => {
+    localStorage.setItem("toDo", JSON.stringify(allToDos));
+  }, [allToDos]);
 
   return (
-    <div>
-      <h1>To Do List</h1>
-      <hr />
-      <form>
-        <select value={category} onInput={onInput}>
-          <option value={Categories.TODO}>To Do</option>
-          <option value={Categories.DOING}>Doing</option>
-          <option value={Categories.DONE}>Done</option>
-        </select>
-      </form>
-      <CreateToDo />
-      {toDos?.map((toDo) => (
-        <ToDo key={toDo.id} {...toDo} />
-      ))}
-      {/* selector에서 선택적으로 배열을 받아오기 때문에 컴포넌트 하나만 렌더링하면 됨 */}
-    </div>
+    <Container>
+      <ToDoBoard>
+        <Header>
+          <Title>🔖 To Do List</Title>
+        </Header>
+        <BtnWrapper>
+          <Btn
+            value={Categories.TODO}
+            onClick={onChangeCategories}
+            style={{ backgroundColor: "#e74c3c", color: "white" }}
+          >
+            To Do
+          </Btn>
+          <Btn
+            value={Categories.DOING}
+            onClick={onChangeCategories}
+            style={{ backgroundColor: "#f39c12", color: "white" }}
+          >
+            Doing
+          </Btn>
+          <Btn
+            value={Categories.DONE}
+            onClick={onChangeCategories}
+            style={{ backgroundColor: "#27ae60", color: "white" }}
+          >
+            Done
+          </Btn>
+          {othersCategories?.map((otherCategory) => (
+            <Btn
+              key={otherCategory.id}
+              value={otherCategory.category}
+              onClick={onChangeCategories}
+              style={{ backgroundColor: "#3498db", color: "white" }}
+            >
+              {otherCategory.category}
+            </Btn>
+          ))}
+          <Btn
+            value={Categories.OTHERS}
+            onClick={onClickOthers}
+            style={{ color: "black" }}
+          >
+            Add New Category
+          </Btn>
+          {othersBtn ? <CreateCategory /> : ""}
+        </BtnWrapper>
+        <CreateToDo />
+        {toDos.map((toDo) => (
+          <ToDo key={toDo.id} {...toDo} />
+        ))}
+      </ToDoBoard>
+    </Container>
   );
 }
 

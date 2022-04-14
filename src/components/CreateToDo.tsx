@@ -1,7 +1,13 @@
 import { useForm } from "react-hook-form";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import styled from "styled-components";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { categoryState, toDoState } from "../atoms";
+import { Input } from "./CreateCategory";
+import { Btn } from "./ToDoList";
 
+const Form = styled.form`
+  margin-bottom: 20px;
+`;
 interface IForm {
   toDo: string;
 }
@@ -15,19 +21,18 @@ function CreateToDo() {
       { text: toDo, id: Date.now(), category: category },
       ...oldToDos,
     ]);
-    // #5.11 Add To Do
     setValue("toDo", "");
   };
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input
+    <Form onSubmit={handleSubmit(onSubmit)}>
+      <Input
         {...register("toDo", {
           required: "Please Write a to do",
         })}
         placeholder="Write a to do"
       />
-      <button>Add</button>
-    </form>
+      <Btn style={{ width: "100%" }}>추가</Btn>
+    </Form>
   );
 }
 

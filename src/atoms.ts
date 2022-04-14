@@ -5,9 +5,8 @@ export enum Categories {
   "TODO" = "TODO", // => 값이 TODO
   "DOING" = "DOING",
   "DONE" = "DONE",
+  "OTHERS" = "OTHERS",
 }
-
-// type categories = "TODO" | "DOING" | "DONE";
 
 export interface IToDo {
   text: string;
@@ -15,14 +14,24 @@ export interface IToDo {
   category: Categories; //string도 제한해서 받을 수 있음
 }
 
+export interface IOthersCategory {
+  category: string;
+  id: number;
+}
+
 export const categoryState = atom<Categories>({
   key: "category",
   default: Categories.TODO,
 });
 
+export const othersCategoryState = atom<IOthersCategory[]>({
+  key: "othersCategory",
+  default: JSON.parse(localStorage.getItem("category") || "[]"),
+});
+
 export const toDoState = atom<IToDo[]>({
   key: "toDo",
-  default: [],
+  default: JSON.parse(localStorage.getItem("toDo") || "[]"),
 });
 
 export const toDoSelector = selector({
